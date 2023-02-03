@@ -9,16 +9,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.Json;
 
 namespace Chat
 {
     public partial class FormChat : Form
     {
-        public string serverAdress;
-        public int port;
-
-        private IPEndPoint ipEndPoint;
-        private Socket socket;
+        public Socket socket;
 
         private List<string> chat;
 
@@ -29,44 +26,10 @@ namespace Chat
 
         private void FormChat_Load(object sender, EventArgs e)
         {
-            if(serverAdress != null && port != 0)
+            if(socket != null)
             {
-                try
-                {
-                    ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1000);
-
-                    socket = new Socket(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    try
-                    {
-                        socket.Connect(ipEndPoint);
-
-                        byte[] msg = Encoding.UTF8.GetBytes("Get users: " + Text);
-                        int bytesSent = socket.Send(msg);
-
-                        byte[] bytes = new byte[1024];
-                        int bytesRec = socket.Receive(bytes);
-                        string response = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-
-                        // socket.Shutdown(SocketShutdown.Both);
-                        // socket.Close();
-                    }
-                    catch (ArgumentNullException ex)
-                    {
-                        MessageBox.Show("ArgumentNullException : " + ex.Message);
-                    }
-                    catch (SocketException ex)
-                    {
-                        MessageBox.Show("SocketException : " + ex.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Unexpected exception : " + ex.Message);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Unexpected exception : " + ex.Message);
-                }
+                Task receiveData = new Task(ReceiveData);
+                receiveData.Start();
             }
             else
             {
@@ -84,20 +47,27 @@ namespace Chat
             }
         }
 
-        private void ReceiveMessage(string user)
+        private void ReceiveData()
         {
-            if (ipEndPoint != null && socket != null)
+            while (true)
             {
                 try
                 {
-                    while (true)
-                    {
-                        byte[] bytes = new byte[1024];
-                        int bytesRec = socket.Receive(bytes);
-                        string response = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                    byte[] bytes = new byte[1024];
+                    int bytesRec = socket.Receive(bytes);
+                    Response response = JsonSerializer.Deserialize<Response>(Encoding.UTF8.GetString(bytes, 0, bytesRec));
 
-                        chat = new List<string>();
-                        chat.AddRange(response.Split('\n'));
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+
+                    if (response.code == 3)
+                    {
+                        Button button = new Button();
+                        button.Text = response.from;
+                        button.Size = new Size(222, 41);
+                        button.Click += new EventHandler(buttonUser_Click);
+
+                        flowLayoutPanel2.Controls.Add(button);
                     }
                 }
                 catch (ArgumentNullException ex)
@@ -113,18 +83,13 @@ namespace Chat
                     MessageBox.Show("Unexpected exception : " + ex.Message);
                 }
             }
-            else
-            {
-                // Test
-                // Test
-            }
         }
 
         private void buttonUser_Click(object sender, EventArgs e)
         {
             label1.Text = ((Button)sender).Text;
             richTextBox1.Text = "";
-            if (ipEndPoint != null && socket != null)
+            if (socket != null)
             {
                 try
                 {
@@ -170,7 +135,7 @@ namespace Chat
             chat.Add(textBoxMessage.Text);
             richTextBox1.AppendText("\r\n" + textBoxMessage.Text);
             richTextBox1.ScrollToCaret();
-            if (ipEndPoint != null && socket != null)
+            if (socket != null)
             {
                 try
                 {
