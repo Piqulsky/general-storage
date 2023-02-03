@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Chat
 {
     public class Login { 
-        public string username; 
+        public string username { get; set; }
         public Login(string username)
         {
             this.username = username;
@@ -15,7 +15,9 @@ namespace Chat
     }
     public class Message
     {
-        public string message; public string target; public bool isPrivate;
+        public string message { get; set; }
+        public string target { get; set; }
+        public bool isPrivate { get; set; }
         public Message(string message, string target)
         {
             this.message = message;
@@ -24,6 +26,6 @@ namespace Chat
     }
     public class Response
     {
-        int code; string error = null; string message = null; string from = null; bool isPrivate = false;
+        public int code; public string error = null; public string message = null; public string from = null; public bool isPrivate = false;
     }
 }

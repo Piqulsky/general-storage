@@ -26,26 +26,24 @@ namespace Chat
             {
                 try
                 {
-                    IPHostEntry host = Dns.GetHostEntry(textBoxAdress.Text);
-                    IPAddress ipAddress = host.AddressList[0];
-                    IPEndPoint remoteEP = new IPEndPoint(ipAddress, int.Parse(textBoxPort.Text));
+                    IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(textBoxAdress.Text), int.Parse(textBoxPort.Text));
 
-                    Socket socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    Socket socket = new Socket(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                     try
                     {
-                        socket.Connect(remoteEP);
+                        socket.Connect(ipEndPoint);
 
                         byte[] msg = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new Login(textBoxUsername.Text)));
                         int bytesSent = socket.Send(msg);
 
                         byte[] bytes = new byte[1024];
                         int bytesRec = socket.Receive(bytes);
-                        string response = JsonSerializer.Deserialize<Login>(Encoding.UTF8.GetString(bytes, 0, bytesRec)).username;
+                        int response = JsonSerializer.Deserialize<Response>(Encoding.UTF8.GetString(bytes, 0, bytesRec)).code;
 
                         socket.Shutdown(SocketShutdown.Both);
                         socket.Close();
 
-                        if(response == "success")
+                        if(response == 0)
                         {
                             FormChat formChat = new FormChat();
                             formChat.Text = textBoxUsername.Text;
