@@ -40,16 +40,12 @@ namespace Chat
                         int bytesRec = socket.Receive(bytes);
                         int response = JsonSerializer.Deserialize<Response>(Encoding.UTF8.GetString(bytes, 0, bytesRec)).code;
 
-                        socket.Shutdown(SocketShutdown.Both);
-                        socket.Close();
-
                         if(response == 0)
                         {
                             FormChat formChat = new FormChat();
                             formChat.Text = textBoxUsername.Text;
-                            formChat.serverAdress = textBoxAdress.Text;
-                            formChat.port = int.Parse(textBoxPort.Text);
-                            formChat.ShowDialog();
+                            formChat.socket = socket;
+                            formChat.Show();
                         }
                     }
                     catch (ArgumentNullException ex)
@@ -69,12 +65,6 @@ namespace Chat
                 {
                     MessageBox.Show("Unexpected exception : " + ex.Message);
                 }
-            }
-            else
-            {
-                FormChat formChat = new FormChat();
-                formChat.Text = textBoxUsername.Text;
-                formChat.ShowDialog();
             }
         }
     }

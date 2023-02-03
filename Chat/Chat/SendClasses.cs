@@ -26,6 +26,7 @@ namespace Chat
     }
     public class Response
     {
-        public int code; public string error = null; public string message = null; public string from = null; public bool isPrivate = false;
+        public int code { get; set; }
+        public string error = null; public string message = null; public string from = null; public bool isPrivate = false;
     }
 }
