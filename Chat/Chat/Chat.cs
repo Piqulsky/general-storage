@@ -17,9 +17,7 @@ namespace Chat
         public string serverAdress;
         public int port;
 
-        private IPHostEntry host;
-        private IPAddress ipAddress;
-        private IPEndPoint remoteEP;
+        private IPEndPoint ipEndPoint;
         private Socket socket;
 
         private List<string> chat;
@@ -35,14 +33,12 @@ namespace Chat
             {
                 try
                 {
-                    host = Dns.GetHostEntry(serverAdress);
-                    ipAddress = host.AddressList[0];
-                    remoteEP = new IPEndPoint(ipAddress, port);
+                    ipEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1000);
 
-                    socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    socket = new Socket(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                     try
                     {
-                        socket.Connect(remoteEP);
+                        socket.Connect(ipEndPoint);
 
                         byte[] msg = Encoding.UTF8.GetBytes("Get users: " + Text);
                         int bytesSent = socket.Send(msg);
@@ -90,7 +86,7 @@ namespace Chat
 
         private void ReceiveMessage(string user)
         {
-            if (host != null && remoteEP != null && socket != null)
+            if (ipEndPoint != null && socket != null)
             {
                 try
                 {
@@ -128,7 +124,7 @@ namespace Chat
         {
             label1.Text = ((Button)sender).Text;
             richTextBox1.Text = "";
-            if (host != null && remoteEP != null && socket != null)
+            if (ipEndPoint != null && socket != null)
             {
                 try
                 {
@@ -174,7 +170,7 @@ namespace Chat
             chat.Add(textBoxMessage.Text);
             richTextBox1.AppendText("\r\n" + textBoxMessage.Text);
             richTextBox1.ScrollToCaret();
-            if (host != null && remoteEP != null && socket != null)
+            if (ipEndPoint != null && socket != null)
             {
                 try
                 {
