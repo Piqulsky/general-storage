@@ -1,0 +1,12 @@
+C:\Users\drummermichal\source\repos\Chat\Chat\bin\Debug\Chat.exe.config
+C:\Users\drummermichal\source\repos\Chat\Chat\bin\Debug\Chat.exe
+C:\Users\drummermichal\source\repos\Chat\Chat\bin\Debug\Chat.pdb
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.csproj.AssemblyReference.cache
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.csproj.SuggestedBindingRedirects.cache
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.FormChat.resources
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.Properties.Resources.resources
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.SignIn.resources
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.csproj.GenerateResource.cache
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.csproj.CoreCompileInputs.cache
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.exe
+C:\Users\drummermichal\source\repos\Chat\Chat\obj\Debug\Chat.pdb
