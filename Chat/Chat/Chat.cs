@@ -17,7 +17,8 @@ namespace Chat
     {
         public Socket socket;
 
-        private List<string> chat;
+        private Dictionary<string, List<string>> chat = new Dictionary<string, List<string>>(){ {"Public", new List<string>() } };
+        private string target = "Public";
 
         public FormChat()
         {
@@ -43,6 +44,7 @@ namespace Chat
                     button.Click += new EventHandler(buttonUser_Click);
 
                     flowLayoutPanel2.Controls.Add(button);
+                    chat.Add(user, new List<string>());
                 }
             }
         }
@@ -57,10 +59,12 @@ namespace Chat
                     int bytesRec = socket.Receive(bytes);
                     Response response = JsonSerializer.Deserialize<Response>(Encoding.UTF8.GetString(bytes, 0, bytesRec));
 
-                    socket.Shutdown(SocketShutdown.Both);
-                    socket.Close();
-
-                    if (response.code == 3)
+                    if(response.code == 0)
+                    {
+                        if(response.message != null)
+                            chat[response.isPrivate ? response.from : "Public"].Add(response.from + " -> " + response.message);
+                    }
+                    else if (response.code == 3)
                     {
                         Button button = new Button();
                         button.Text = response.from;
@@ -68,6 +72,7 @@ namespace Chat
                         button.Click += new EventHandler(buttonUser_Click);
 
                         flowLayoutPanel2.Controls.Add(button);
+                        chat.Add(response.from, new List<string>());
                     }
                 }
                 catch (ArgumentNullException ex)
@@ -87,40 +92,22 @@ namespace Chat
 
         private void buttonUser_Click(object sender, EventArgs e)
         {
-            label1.Text = ((Button)sender).Text;
+            target = ((Button)sender).Text;
+            label1.Text = target;
             richTextBox1.Text = "";
             if (socket != null)
             {
-                try
+                foreach (var msg in chat[target])
                 {
-                    byte[] msg = Encoding.UTF8.GetBytes("Get messages: " + Text + " " + ((Button)sender).Text);
-                    int bytesSent = socket.Send(msg);
-
-                    byte[] bytes = new byte[1024];
-                    int bytesRec = socket.Receive(bytes);
-                    string response = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-
-                    chat = new List<string>();
-                    chat.AddRange(response.Split('\n'));
+                    richTextBox1.AppendText("\r\n" + msg);
                 }
-                catch (ArgumentNullException ex)
-                {
-                    MessageBox.Show("ArgumentNullException : " + ex.Message);
-                }
-                catch (SocketException ex)
-                {
-                    MessageBox.Show("SocketException : " + ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Unexpected exception : " + ex.Message);
-                }
+                richTextBox1.ScrollToCaret();
             }
             else
             {
-                string response = "[01.02.2023 08:12:03] User1 -> XD\n[01.02.2023 08:12:03] User2 -> XD\n[01.02.2023 08:12:03] User1 -> XD2\n[01.02.2023 08:12:03] User1 -> XD3\n";
-                chat = new List<string>();
-                chat.AddRange(response.Split('\n'));
+                string response = "User1 -> XD\nUser2 -> XD\nUser1 -> XD2\nUser1 -> XD3\n";
+                //chat = new List<string>();
+                //chat.AddRange(response.Split('\n'));
 
                 foreach(var msg in chat)
                 {
@@ -132,19 +119,15 @@ namespace Chat
 
         private void buttonSend_Click(object sender, EventArgs e)
         {
-            chat.Add(textBoxMessage.Text);
-            richTextBox1.AppendText("\r\n" + textBoxMessage.Text);
+            chat[target].Add(this.Text + " -> " + textBoxMessage.Text);
+            richTextBox1.AppendText("\r\n" + this.Text + " -> " + textBoxMessage.Text);
             richTextBox1.ScrollToCaret();
             if (socket != null)
             {
                 try
                 {
-                    byte[] msg = Encoding.UTF8.GetBytes("Send message: " + Text + " " + label1.Text + " " + textBoxMessage.Text);
+                    byte[] msg = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new Message(textBoxMessage.Text, target, target != "Public")));
                     int bytesSent = socket.Send(msg);
-
-                    byte[] bytes = new byte[1024];
-                    int bytesRec = socket.Receive(bytes);
-                    string response = Encoding.UTF8.GetString(bytes, 0, bytesRec);
                 }
                 catch (ArgumentNullException ex)
                 {

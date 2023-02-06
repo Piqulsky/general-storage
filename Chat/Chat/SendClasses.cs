@@ -18,10 +18,11 @@ namespace Chat
         public string message { get; set; }
         public string target { get; set; }
         public bool isPrivate { get; set; }
-        public Message(string message, string target)
+        public Message(string message, string target, bool isPrivate)
         {
             this.message = message;
             this.target = target;
+            this.isPrivate = isPrivate;
         }
     }
     public class Response
