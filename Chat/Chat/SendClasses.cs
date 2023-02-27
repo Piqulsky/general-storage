@@ -28,6 +28,6 @@ namespace Chat
     public class Response
     {
         public int code { get; set; }
-        public string error = null; public string message = null; public string from = null; public bool isPrivate = false;
+        public string error { get; set; } = null; public string message { get; set; } = null; public string from { get; set; } = null; public bool isPrivate { get; set; } = false;
     }
 }
