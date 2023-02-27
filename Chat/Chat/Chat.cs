@@ -62,7 +62,17 @@ namespace Chat
                     if(response.code == 0)
                     {
                         if(response.message != null)
+                        {
                             chat[response.isPrivate ? response.from : "Public"].Add(response.from + " -> " + response.message);
+                            if (target == response.from && response.isPrivate)
+                            {
+                                richTextBox1.BeginInvoke(new Action(() => { richTextBox1.AppendText("\r\n" + response.from + " -> " + response.message); }));
+                            }
+                            else if (!response.isPrivate && target == "Public")
+                            {
+                                richTextBox1.BeginInvoke(new Action(() => { richTextBox1.AppendText("\r\n" + response.from + " -> " + response.message); }));
+                            }
+                        }
                     }
                     else if (response.code == 3)
                     {
@@ -71,7 +81,7 @@ namespace Chat
                         button.Size = new Size(222, 41);
                         button.Click += new EventHandler(buttonUser_Click);
 
-                        flowLayoutPanel2.Controls.Add(button);
+                        flowLayoutPanel2.BeginInvoke((Action)(() => { flowLayoutPanel2.Controls.Add(button); }));
                         chat.Add(response.from, new List<string>());
                     }
                 }
