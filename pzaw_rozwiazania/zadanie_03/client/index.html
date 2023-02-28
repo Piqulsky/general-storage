@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Zadanie_03</title>
+    </head>
+    <body>
+        <div id="add">
+            <button onclick="add()">Dodaj nowego użytkownika</button>
+        </div>
+        <table id="table">
+            
+        </table>
+    </body>
+    <script>
+        function baseState(user, index){
+            let row = document.createElement("tr");
+            row.setAttribute("id", index + 1);
+
+            let id = document.createElement("td");
+            id.innerText = index + 1;
+            row.appendChild(id);
+
+            let firstName = document.createElement("td");
+            firstName.innerText = user.firstName;
+            row.appendChild(firstName);
+
+            let lastName = document.createElement("td");
+            lastName.innerText = user.lastName;
+            row.appendChild(lastName);
+
+            let actionsDiv = document.createElement("td");
+            let editButton = document.createElement("button");
+            editButton.innerText = "Edytuj";
+            editButton.setAttribute("onClick", "edit(event)");
+            actionsDiv.appendChild(editButton);
+
+            let deleteButton = document.createElement("button");
+            deleteButton.innerText = "Kasuj";
+            deleteButton.setAttribute("onClick", "del()");
+            actionsDiv.appendChild(deleteButton);
+
+            row.appendChild(actionsDiv);
+
+            return row;
+        }
+        function editState(user, index){
+            let row = document.createElement("tr");
+            row.setAttribute("id", index);
+
+            let id = document.createElement("td");
+            id.innerText = index;
+            row.appendChild(id);
+
+            let firstName = document.createElement("td");
+            let firstNameInput = document.createElement("input");
+            firstNameInput.setAttribute("value", user.firstName);
+            firstName.appendChild(firstNameInput);
+            row.appendChild(firstName);
+
+            let lastName = document.createElement("td");
+            let lastNameInput = document.createElement("input");
+            lastNameInput.setAttribute("value", user.lastName);
+            lastName.appendChild(lastNameInput)
+            row.appendChild(lastName);
+
+            let actionsDiv = document.createElement("td");
+            let acceptButton = document.createElement("button");
+            acceptButton.innerText = "Akceptuj";
+            acceptButton.setAttribute("onClick", "put(event)");
+            actionsDiv.appendChild(acceptButton);
+
+            let cancelButton = document.createElement("button");
+            cancelButton.innerText = "Anuluj";
+            cancelButton.setAttribute("onClick", "getData()");
+            actionsDiv.appendChild(cancelButton);
+
+            row.appendChild(actionsDiv);
+
+            return row;
+        }
+        function fillTable(data){
+            let table = document.getElementById("table");
+            table.innerHTML = "";
+            let headerRow = document.createElement("tr");
+            for(i = 0; i < 4; i++){
+                let th = document.createElement("th");
+                switch(i){
+                    case 0:
+                        th.innerText = "Lp.";
+                        break;
+                    case 1:
+                        th.innerText = "Imię";
+                        break;
+                    case 2:
+                        th.innerText = "Nazwisko";
+                        break;
+                    case 3:
+                        th.innerText = "Akcje";
+                        break;
+                }
+                headerRow.appendChild(th);
+            }
+            table.appendChild(headerRow);
+            data.users.forEach((user, index) => {
+                table.appendChild(baseState(user, index));
+            });
+        }
+        function getData() {
+            fetch("http://127.0.0.1:3000/pzaw_zadanie_03", {
+                method: 'GET'
+            })
+            .then(res => res.json())
+            .then(resData => fillTable(resData));
+        }
+        getData();
+
+        function add(){
+            let div = document.getElementById("add");
+            div.innerHTML = "";
+            let firstNameInput = document.createElement("input");
+            firstNameInput.setAttribute("id", "firstname");
+            firstNameInput.setAttribute("placeholder", "First Name: ");
+            div.appendChild(firstNameInput);
+            let lastNameInput = document.createElement("input");
+            lastNameInput.setAttribute("id", "lastname");
+            lastNameInput.setAttribute("placeholder", "Last Name: ");
+            div.appendChild(lastNameInput);
+            let addButton = document.createElement("button");
+            addButton.innerText = "Dodaj";
+            addButton.setAttribute("onClick", "post()");
+            div.appendChild(addButton);
+        }
+        function edit(event){
+            let index = [...event.composedPath()[2].cells][0].innerText;
+            let user = {
+                firstName: [...event.composedPath()[2].cells][1].innerText,
+                lastName: [...event.composedPath()[2].cells][2].innerText,
+            }
+            document.getElementById(event.composedPath()[2].id).parentNode.replaceChild(editState(user, index), document.getElementById(event.composedPath()[2].id));
+        }
+        function post(){
+            let div = document.getElementById("add");
+            let children = [...div.children];
+            div.innerHTML = "";
+            let addButton = document.createElement("button");
+            addButton.innerText = "Dodaj nowego użytkownika";
+            addButton.setAttribute("onClick", "add()");
+            div.appendChild(addButton);
+
+            let data = {
+                firstName: children[0].value,
+                lastName: children[1].value
+            }
+            fetch("http://127.0.0.1:3000/pzaw_zadanie_03", {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                res.json();
+                getData();
+            })
+            .then(resData => console.log(resData));
+        }
+        function del(){
+            let children = [...event.composedPath()[2].children];
+
+            let data = {
+                id: children[0].innerText
+            }
+            fetch("http://127.0.0.1:3000/pzaw_zadanie_03", {
+                method: 'DELETE',
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                res.json();
+                getData();
+            })
+            .then(resData => console.log(resData));
+        }
+        function put(event){
+            let children = [...event.composedPath()[2].children];
+            let data = {
+                id: children[0].innerText,
+                firstName: children[1].firstChild.value,
+                lastName: children[2].firstChild.value
+            }
+            fetch("http://127.0.0.1:3000/pzaw_zadanie_03", {
+                method: 'PUT',
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                res.json();
+                getData();
+            })
+            .then(resData => console.log(resData));
+        }
+    </script>
+</html>
