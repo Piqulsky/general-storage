@@ -4,13 +4,20 @@ const authenticateRouter = express.Router();
 const bcryptjs = require('bcryptjs');
 const fs = require('fs');
 
-let data = require('./db.json');
+const { Users } = require('./sequelize/sequelize')
 
-authenticateRouter.get("/", (req, res) => {
+let data = require('./data.json');
+
+authenticateRouter.get("/", async (req, res) => {
     console.log("GET/", req.query, req.session.id);
     let params = req.query;
-    if(data.users.find(x => x.username == params.username)){
-        bcryptjs.compare(params.password, data.users.find(x => x.username == params.username).password, (err, result) => {
+    const user = await Users.findOne({
+        where: {
+            username: params.username
+          }
+    })
+    if(user){
+        bcryptjs.compare(params.password, user.password, (err, result) => {
             if(result){
                 data.sessions.push(req.session.id);
                 res.status(200).send("Logged");
@@ -49,12 +56,16 @@ authenticateRouter.get("/articles", (req, res) => {
         res.status(400).send("No session")
 })
 
-authenticateRouter.post("/", (req, res) => {
+authenticateRouter.post("/", async (req, res) => {
     console.log("POST/", req.body, req.session.id);
     let body = req.body;
-    if(!data.users.find(x => x.username == body.username && x.password == body.password)){
-        data.users.push({username: body.username, password: bcryptjs.hashSync(body.password, 10), role: 0});
-        fs.writeFileSync('./db.json', JSON.stringify(data));
+    const user = await Users.findOne({
+        where: {
+            username: body.username
+          }
+    })
+    if(!user){
+        const newUser = await Users.create({username: body.username, password: bcryptjs.hashSync(body.password, 10), role: 0})
         data.sessions.push(req.session.id);
         res.status(201).send("Registered");
     }
