@@ -14,6 +14,7 @@ namespace ToDoList
 {
     public partial class Form1 : Form
     {
+        Dictionary<string, object[]> completeList = new Dictionary<string, object[]>();
         public Form1()
         {
             InitializeComponent();
@@ -21,8 +22,8 @@ namespace ToDoList
             {
                 FileStream fs = new FileStream("list.moscicki", FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
-                var itemsInFile = (object[])bf.Deserialize(fs);
-                toDoList.Items.AddRange(itemsInFile);
+                completeList = (Dictionary<string, object[]>)bf.Deserialize(fs);
+                toDoList.Items.AddRange(completeList[dateTimePicker1.Value.ToShortDateString()]);
                 fs.Close();
             }
             catch {  }
@@ -34,9 +35,9 @@ namespace ToDoList
 
             FileStream fs = new FileStream("list.moscicki", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
-            object[] listItems = new object[toDoList.Items.Count];
-            toDoList.Items.CopyTo(listItems, 0);
-            bf.Serialize(fs, listItems);
+            completeList[dateTimePicker1.Value.ToShortDateString()] = new object[toDoList.Items.Count];
+            toDoList.Items.CopyTo(completeList[dateTimePicker1.Value.ToShortDateString()], 0);
+            bf.Serialize(fs, completeList);
             fs.Close();
         }
 
@@ -46,10 +47,23 @@ namespace ToDoList
 
             FileStream fs = new FileStream("list.moscicki", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
-            object[] listItems = new object[toDoList.Items.Count];
-            toDoList.Items.CopyTo(listItems, 0);
-            bf.Serialize(fs, listItems);
+            completeList[dateTimePicker1.Value.ToShortDateString()] = new object[toDoList.Items.Count];
+            toDoList.Items.CopyTo(completeList[dateTimePicker1.Value.ToShortDateString()], 0);
+            bf.Serialize(fs, completeList);
             fs.Close();
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                toDoList.Items.Clear();
+                toDoList.Items.AddRange(completeList[dateTimePicker1.Value.ToShortDateString()]);
+            }
+            catch
+            {
+                completeList.Add(dateTimePicker1.Value.ToShortDateString(), new object[1]);
+            }
         }
     }
 }
