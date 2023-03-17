@@ -35,7 +35,14 @@ namespace ToDoList
 
             FileStream fs = new FileStream("list.moscicki", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
-            completeList[dateTimePicker1.Value.ToShortDateString()] = new object[toDoList.Items.Count];
+            try
+            {
+                completeList[dateTimePicker1.Value.ToShortDateString()] = new object[toDoList.Items.Count];
+            }
+            catch
+            {
+                completeList.Add(dateTimePicker1.Value.ToShortDateString(), new object[toDoList.Items.Count]);
+            }
             toDoList.Items.CopyTo(completeList[dateTimePicker1.Value.ToShortDateString()], 0);
             bf.Serialize(fs, completeList);
             fs.Close();
@@ -60,9 +67,8 @@ namespace ToDoList
                 toDoList.Items.Clear();
                 toDoList.Items.AddRange(completeList[dateTimePicker1.Value.ToShortDateString()]);
             }
-            catch
+            catch (Exception exc)
             {
-                completeList.Add(dateTimePicker1.Value.ToShortDateString(), new object[1]);
             }
         }
     }
