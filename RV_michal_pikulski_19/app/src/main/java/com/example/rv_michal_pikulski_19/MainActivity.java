@@ -5,20 +5,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    private ItemAdapter itemAdapter;
+    private List<TransactionData> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        ItemAdapter adapter = new ItemAdapter(createData());
-        recyclerView.setAdapter(adapter);
+        data = createData();
+        itemAdapter = new ItemAdapter(data);
+        recyclerView.setAdapter(itemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -37,5 +41,13 @@ public class MainActivity extends AppCompatActivity {
         localDataStore.add(new TransactionData("Lambda", "Enteka"));
         localDataStore.add(new TransactionData("My", "Dodeka"));
         return localDataStore;
+    }
+
+    public void OnClick(View view){
+        EditText editText1 = findViewById(R.id.editText1);
+        EditText editText2 = findViewById(R.id.editText2);
+        if(editText1.getText().equals("") || editText2.getText().equals("")) return;
+        data.add(new TransactionData(editText1.getText().toString(), editText2.getText().toString()));
+        itemAdapter.notifyDataSetChanged();
     }
 }
