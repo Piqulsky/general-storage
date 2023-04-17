@@ -9,17 +9,22 @@ import android.view.View;
 import android.widget.EditText;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private ItemAdapter itemAdapter;
     private List<TransactionData> data;
+
+    Map<Integer, String[]> processableData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         data = createData();
         itemAdapter = new ItemAdapter(data);
         recyclerView.setAdapter(itemAdapter);
@@ -28,26 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     List<TransactionData> createData(){
         List<TransactionData> localDataStore = new ArrayList<TransactionData>();
-        localDataStore.add(new TransactionData("Alfa", "Ena"));
-        localDataStore.add(new TransactionData("Beta", "Dio"));
-        localDataStore.add(new TransactionData("Gamma", "Tria"));
-        localDataStore.add(new TransactionData("Delta", "Tessera"));
-        localDataStore.add(new TransactionData("Epsilon", "Pente"));
-        localDataStore.add(new TransactionData("Dzeta", "Exi"));
-        localDataStore.add(new TransactionData("Eta", "Epta"));
-        localDataStore.add(new TransactionData("Theta", "Okto"));
-        localDataStore.add(new TransactionData("Jota", "Ennia"));
-        localDataStore.add(new TransactionData("Kappa", "Deka"));
-        localDataStore.add(new TransactionData("Lambda", "Enteka"));
-        localDataStore.add(new TransactionData("My", "Dodeka"));
         return localDataStore;
-    }
-
-    public void OnClick(View view){
-        EditText editText1 = findViewById(R.id.editText1);
-        EditText editText2 = findViewById(R.id.editText2);
-        if(editText1.getText().equals("") || editText2.getText().equals("")) return;
-        data.add(new TransactionData(editText1.getText().toString(), editText2.getText().toString()));
-        itemAdapter.notifyDataSetChanged();
     }
 }
