@@ -24,8 +24,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
-        // holder.getTextView().setText(dataStore.get(position).text);
-        // holder.getSecondaryTextView().setText(dataStore.get(position).secondaryText);
+        holder.getTextViewName().setText(dataStore.get(position).name);
+        holder.getTextViewOccurrence().setText(dataStore.get(position).occurrence);
+        holder.getTextEating().setText(dataStore.get(position).eating);
+        holder.getTextViewEnvironment().setText(dataStore.get(position).environment);
+        holder.getTextViewLifespan().setText(dataStore.get(position).lifespan);
+        holder.getImageView().setImageResource(dataStore.get(position).image);
     }
 
     @Override
