@@ -1,0 +1,5 @@
+{"users":
+[{"username":"Template","password":"TemplatePass","role":0},{"username":"test","password":"$2a$10$/vLbsLjNflhCXFzQ8u4Wr.34EGmzi4KJbamhI3Ow3.6gMFNtzWXza","role":0}],
+"articles":[{"author":"Author 1","content":"Content that is supposed to mean something generally","score":0,"comments":[{"commentor":"Commentor 1","comment":"Comment"}]}],
+"sessions": []
+}
