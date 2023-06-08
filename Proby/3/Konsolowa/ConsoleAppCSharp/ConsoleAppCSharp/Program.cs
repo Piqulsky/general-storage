@@ -1,9 +1,14 @@
-﻿
-Osoba o1 = new Osoba(0, "Stefan");
-Osoba o2 = new Osoba(1, "Feliks");
-Osoba o3 = new Osoba(o1);
-o1.WypisanieImienia("Feliks");
-Console.WriteLine("Liczba instancji: " + Osoba.instancje);
+﻿// Na podstawie Część IV. Dokumentacja aplikacji
+Console.WriteLine("Liczba zarejestrowanych osób to " + Osoba.instancje);
+Osoba o1 = new Osoba();
+Console.Write("Id osoby: ");
+int id = int.Parse(Console.ReadLine());
+Console.Write("Imię osoby: ");
+string name = Console.ReadLine();
+Osoba o2 = new Osoba(id, name);
+o1.WypisanieImienia("Jan");
+o2.WypisanieImienia("Jan");
+Console.WriteLine("Liczba zarejestrowanych osób to " + Osoba.instancje);
 
 class Osoba
 {
@@ -35,7 +40,8 @@ class Osoba
     // Metoda wypisująca imię na podstawie parametru
     public void WypisanieImienia(string imie)
     {
-        if (imie != "")
+        // Właściwość this rozróżnia pole klasy od argumentu funkcji
+        if (this.imie != "")
             Console.WriteLine("Cześć " + imie + " mam na imię " + this.imie);
         else
             Console.WriteLine("Brak danych");
