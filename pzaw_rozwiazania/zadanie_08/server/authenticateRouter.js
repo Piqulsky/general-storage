@@ -47,15 +47,6 @@ authenticateRouter.get("/sessions", (req, res) => {
     res.status(200).send(data.sessions);
 })
 
-authenticateRouter.get("/articles", (req, res) => {
-    console.log("GET/articles", req.query, req.session.id);
-    console.log(data.sessions);
-    if(data.sessions.find(x => x == req.session.id))
-        res.status(200).send(data.articles);
-    else
-        res.status(400).send("No session")
-})
-
 authenticateRouter.post("/", async (req, res) => {
     console.log("POST/", req.body, req.session.id);
     let body = req.body;
